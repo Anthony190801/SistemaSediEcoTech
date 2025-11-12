@@ -192,6 +192,33 @@
         </div>
     </div>
 
+    <!-- QR Code Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <svg class="w-5 h-5 text-[#34A853] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+            </svg>
+            Código QR de Recolección
+        </h3>
+        <p class="text-sm text-gray-600 mb-4">Escanea este código QR para acceder directamente al registro de recolección de este participante.</p>
+        <div class="flex flex-col items-center justify-center bg-gray-50 rounded-lg p-6">
+            <div id="qrcode" class="mb-4">
+                <!-- Fallback: Usar API de QR Code -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data={{ rawurlencode($qrUrl) }}" 
+                     alt="Código QR de Recolección" 
+                     class="mx-auto"
+                     onerror="this.style.display='none'; document.getElementById('qrcode-fallback').style.display='block';">
+                <div id="qrcode-fallback" style="display: none;" class="text-center">
+                    <p class="text-red-500 text-sm mb-2">No se pudo cargar el código QR</p>
+                    <p class="text-xs text-gray-600">URL: <a href="{{ $qrUrl }}" class="text-blue-500 underline break-all" target="_blank">{{ $qrUrl }}</a></p>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 text-center max-w-xs">
+                Este código QR contiene la URL única para registrar recolecciones de este participante.
+            </p>
+        </div>
+    </div>
+
     <!-- History Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Recolecciones -->
@@ -284,5 +311,6 @@
         </div>
     </div>
 </div>
+
 @endsection
 

@@ -25,7 +25,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [ParticipantLoginController::class, 'logout'])->name('logout');
 
 // Rutas de autenticación para administradores
-Route::prefix('admin')->middleware('guest')->group(function () {
+Route::prefix('admin')->middleware('guest:admin')->group(function () {
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AdminLoginController::class, 'login']);
     Route::get('/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
@@ -102,6 +102,7 @@ Route::middleware(['auth:admin', 'role:Administrador'])->prefix('admin')->name('
     Route::get('recolecciones/paso2-institucion', [RecoleccionController::class, 'paso2Institucion'])->name('recolecciones.paso2-institucion');
     Route::get('recolecciones/paso3-participantes', [RecoleccionController::class, 'paso3Participantes'])->name('recolecciones.paso3-participantes');
     Route::get('recolecciones/paso4-registrar', [RecoleccionController::class, 'paso4Registrar'])->name('recolecciones.paso4-registrar');
+    Route::get('recolecciones/registrar/{uuid}', [RecoleccionController::class, 'registrarPorUuid'])->name('recolecciones.registrar-por-uuid');
 
     // Módulo de Anuncios
     Route::resource('anuncios', \App\Http\Controllers\Admin\AnuncioController::class);

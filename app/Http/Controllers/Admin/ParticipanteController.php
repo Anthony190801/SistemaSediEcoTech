@@ -98,11 +98,15 @@ class ParticipanteController extends Controller
         // Obtener URL de retorno si existe
         $returnTo = $request->get('return_to', route('admin.participantes.index'));
 
+        // Generar URL del QR para recolección
+        $qrUrl = route('admin.recolecciones.registrar-por-uuid', ['uuid' => $participante->uuid]);
+
         return view('admin.participantes.show', [
             'participante' => $participante,
             'ranking' => $ranking,
             'totalParticipantes' => $totalParticipantes,
             'returnTo' => $returnTo,
+            'qrUrl' => $qrUrl,
         ]);
     }
 

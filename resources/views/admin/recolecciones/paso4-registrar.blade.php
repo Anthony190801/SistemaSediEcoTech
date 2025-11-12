@@ -15,8 +15,14 @@
             </h2>
             <p class="text-gray-600 mt-1">Completa los datos para registrar la recolección</p>
         </div>
+        @php
+            // Si se accede por UUID (ruta registrar-por-uuid), redirigir a la lista de recolecciones
+            $volverUrl = request()->routeIs('admin.recolecciones.registrar-por-uuid')
+                ? route('admin.recolecciones.index')
+                : route('admin.recolecciones.paso3-participantes', ['proyecto_id' => $proyecto->id, 'institucion_id' => $institucion->id]);
+        @endphp
         <a 
-            href="{{ route('admin.recolecciones.paso3-participantes', ['proyecto_id' => $proyecto->id, 'institucion_id' => $institucion->id]) }}" 
+            href="{{ $volverUrl }}" 
             class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center space-x-2"
         >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,8 +198,13 @@
 
         <!-- Actions -->
         <div class="flex items-center justify-end space-x-4">
+            @php
+                $cancelarUrl = request()->routeIs('admin.recolecciones.registrar-por-uuid')
+                    ? route('admin.recolecciones.index')
+                    : route('admin.recolecciones.paso3-participantes', ['proyecto_id' => $proyecto->id, 'institucion_id' => $institucion->id]);
+            @endphp
             <a 
-                href="{{ route('admin.recolecciones.paso3-participantes', ['proyecto_id' => $proyecto->id, 'institucion_id' => $institucion->id]) }}" 
+                href="{{ $cancelarUrl }}" 
                 class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
             >
                 Cancelar

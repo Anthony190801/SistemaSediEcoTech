@@ -240,6 +240,49 @@ class RecoleccionController extends Controller
     }
 
     /**
+     * Registrar Recolección por UUID del participante (acceso directo desde QR).
+     */
+    public function registrarPorUuid(string $uuid): View|RedirectResponse
+    {
+        $participante = Participante::with(['persona', 'institucionProyecto.institucion', 'institucionProyecto.proyecto'])
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+
+        $proyecto = $participante->institucionProyecto->proyecto;
+        $institucion = $participante->institucionProyecto->institucion;
+
+        // Verificar que el proyecto y la institución estén activos
+        if ($participante->institucionProyecto->estado !== 'Iniciado') {
+            return redirect()->route('admin.recolecciones.index')
+                ->with('error', 'El proyecto o institución no está activo para este participante.');
+        }
+
+        // Obtener materiales disponibles para este proyecto
+        $materialesDisponibles = MaterialPrecio::whereHas('proyectos', function ($q) use ($proyecto) {
+            $q->where('proyectos.id', $proyecto->id);
+        })
+            ->where('fecha_inicio', '<=', now())
+            ->where(function ($q) {
+                $q->whereNull('fecha_fin')
+                    ->orWhere('fecha_fin', '>=', now());
+            })
+            ->with(['material', 'precio'])
+            ->get()
+            ->groupBy('material_id')
+            ->map(function ($group) {
+                return $group->sortByDesc('fecha_inicio')->first();
+            })
+            ->values();
+
+        return view('admin.recolecciones.paso4-registrar', [
+            'proyecto' => $proyecto,
+            'institucion' => $institucion,
+            'participante' => $participante,
+            'materialesDisponibles' => $materialesDisponibles,
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreRecoleccionRequest $request): RedirectResponse

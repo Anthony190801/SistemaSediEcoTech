@@ -14,8 +14,13 @@ class AdminLoginController extends Controller
     /**
      * Show the admin login form.
      */
-    public function showLoginForm(): View
+    public function showLoginForm(): View|RedirectResponse
     {
+        // Si ya está autenticado como admin, redirigir al dashboard
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return view('auth.admin-login');
     }
 
@@ -53,7 +58,7 @@ class AdminLoginController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard/admin');
+            return redirect()->intended(route('admin.dashboard'));
         }
 
         return back()->withErrors([
