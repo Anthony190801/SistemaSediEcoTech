@@ -1,3 +1,7 @@
+@php
+    $user = Auth::guard('participant')->user() ?? Auth::user();
+@endphp
+
 <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-between px-6">
     <!-- Mobile Menu Button -->
     <button 
@@ -12,29 +16,31 @@
     <!-- Welcome Message -->
     <div class="hidden md:block">
         <h1 class="text-lg font-semibold text-gray-800">
-            Bienvenido, <span class="text-[#34A853]">{{ auth()->guard('admin')->user()->name ?? auth()->user()->name }}</span>
+            Bienvenido, <span class="text-[#34A853]">{{ $user->name }}</span>
         </h1>
     </div>
 
     <!-- User Menu -->
     <div class="flex items-center space-x-4" x-data="{ open: false }">
-        <!-- Profile Picture -->
         <div class="relative">
             <button
                 @click="open = !open"
                 class="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-[#34A853] focus:ring-offset-2 rounded-full"
             >
-                @if(auth()->guard('admin')->user()->profile_picture ?? auth()->user()->profile_picture)
+                @if($user->profile_picture)
                     <img
-                        src="{{ asset('storage/' . (auth()->guard('admin')->user()->profile_picture ?? auth()->user()->profile_picture)) }}"
-                        alt="{{ auth()->guard('admin')->user()->name ?? auth()->user()->name }}"
+                        src="{{ asset('storage/' . $user->profile_picture) }}"
+                        alt="{{ $user->name }}"
                         class="h-10 w-10 rounded-full object-cover border-2 border-[#34A853]"
                     >
                 @else
                     <div class="h-10 w-10 rounded-full bg-[#34A853] flex items-center justify-center text-white font-semibold">
-                        {{ strtoupper(substr(auth()->guard('admin')->user()->name ?? auth()->user()->name, 0, 1)) }}
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
                 @endif
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
             </button>
 
             <!-- Dropdown Menu -->
@@ -50,6 +56,15 @@
                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
                 style="display: none;"
             >
+                <a
+                    href="{{ route('participant.profile.index') }}"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Mi perfil
+                </a>
                 @if(!request()->routeIs('home'))
                     <a
                         href="{{ route('home') }}"
@@ -62,16 +77,7 @@
                     </a>
                 @endif
                 <a
-                    href="{{ route('admin.profile.index') }}"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    Mi perfil
-                </a>
-                <a
-                    href="{{ route('admin.settings.index') }}"
+                    href="{{ route('participant.settings.index') }}"
                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +86,7 @@
                     </svg>
                     Configuración
                 </a>
-                <form action="{{ route('admin.logout') }}" method="POST">
+                <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button
                         type="submit"

@@ -53,7 +53,10 @@ class ParticipantLoginController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard/participant');
+            // Limpiar cualquier URL guardada en la sesión
+            $request->session()->forget('url.intended');
+
+            return redirect()->route('participant.dashboard');
         }
 
         return back()->withErrors([

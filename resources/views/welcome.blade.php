@@ -12,11 +12,19 @@
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         <div class="text-center">
-            @auth
+            @php
+                use Illuminate\Support\Facades\Auth;
+                $adminUser = Auth::guard('admin')->user();
+                $participantUser = Auth::guard('participant')->user();
+                $currentUser = $adminUser ?? $participantUser;
+                $isAdmin = $adminUser !== null;
+            @endphp
+
+            @if($currentUser)
                 <div class="mb-6">
                     <p class="text-lg text-white/90 mb-2">Bienvenido de nuevo,</p>
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-['Roca_One'] mb-4">
-                        {{ auth()->user()->name }}
+                        {{ $currentUser->name }}
                     </h1>
                 </div>
             @else
@@ -26,13 +34,13 @@
                 <p class="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
                     Únete a SEDIECOTECH Rewards y convierte el reciclaje en puntos, premios y un futuro más sostenible.
                 </p>
-            @endauth
+            @endif
 
             <p class="text-lg md:text-xl text-white/80 mb-10 max-w-3xl mx-auto">
                 Un sistema que impulsa el reciclaje y la sostenibilidad mediante tecnología e incentivos.
             </p>
 
-            @guest
+            @if(!$currentUser)
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a
                         href="{{ route('login') }}"
@@ -52,9 +60,9 @@
                 </div>
             @else
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    @if(auth()->user()->rol === 'Administrador')
+                    @if($isAdmin)
                         <a
-                            href="{{ route('dashboard.admin') }}"
+                            href="{{ route('admin.dashboard') }}"
                             class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                         >
                             Ir al Dashboard
@@ -64,7 +72,7 @@
                         </a>
                     @else
                         <a
-                            href="{{ route('dashboard.participant') }}"
+                            href="{{ route('participant.dashboard') }}"
                             class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                         >
                             Ver mi Dashboard
@@ -74,7 +82,7 @@
                         </a>
                     @endif
                 </div>
-            @endguest
+            @endif
         </div>
     </div>
 
@@ -164,8 +172,8 @@
             <!-- Stat 1: Kilos reciclados -->
             <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
                 <div class="text-4xl mb-4">♻️</div>
-                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: 1250 }" x-init="setInterval(() => { if (count < target) count += 10 }, 20)">
-                    <span x-text="Math.min(count, target).toLocaleString()">0</span> kg
+                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: {{ $totalKg }} }" x-init="setInterval(() => { if (count < target) count += Math.max(1, Math.floor(target / 50)) }, 20)">
+                    <span x-text="Math.min(count, target).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })">0</span> kg
                 </div>
                 <p class="text-white/90 text-lg">Materiales Reciclados</p>
             </div>
@@ -173,8 +181,8 @@
             <!-- Stat 2: Participantes -->
             <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
                 <div class="text-4xl mb-4">👥</div>
-                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: 350 }" x-init="setInterval(() => { if (count < target) count += 5 }, 30)">
-                    <span x-text="Math.min(count, target).toLocaleString()">0</span>
+                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: {{ $totalParticipantes }} }" x-init="setInterval(() => { if (count < target) count += Math.max(1, Math.floor(target / 50)) }, 30)">
+                    <span x-text="Math.min(count, target).toLocaleString('es-PE')">0</span>
                 </div>
                 <p class="text-white/90 text-lg">Participantes Activos</p>
             </div>
@@ -182,7 +190,7 @@
             <!-- Stat 3: Instituciones -->
             <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
                 <div class="text-4xl mb-4">🏛️</div>
-                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: 12 }" x-init="setInterval(() => { if (count < target) count += 1 }, 100)">
+                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: {{ $totalInstituciones }} }" x-init="setInterval(() => { if (count < target) count += 1 }, 100)">
                     <span x-text="Math.min(count, target)">0</span>
                 </div>
                 <p class="text-white/90 text-lg">Instituciones</p>
@@ -191,7 +199,7 @@
             <!-- Stat 4: Proyectos -->
             <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
                 <div class="text-4xl mb-4">🚀</div>
-                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: 8 }" x-init="setInterval(() => { if (count < target) count += 1 }, 100)">
+                <div class="text-4xl md:text-5xl font-['Roca_One'] mb-2" x-data="{ count: 0, target: {{ $totalProyectos }} }" x-init="setInterval(() => { if (count < target) count += 1 }, 100)">
                     <span x-text="Math.min(count, target)">0</span>
                 </div>
                 <p class="text-white/90 text-lg">Proyectos Activos</p>

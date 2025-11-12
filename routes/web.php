@@ -38,9 +38,9 @@ Route::post('/admin/logout', [AdminLoginController::class, 'logout'])->name('adm
 // Ruta GET para logout (por si alguien accede directamente, también ejecuta el logout)
 Route::get('/admin/logout', [AdminLoginController::class, 'logout'])->name('admin.logout.get');
 
-// Rutas protegidas para participantes
-Route::middleware(['auth:participant', 'role:Usuario'])->prefix('dashboard/participant')->group(function () {
-    Route::get('/', [ParticipantDashboardController::class, 'index'])->name('participant.dashboard');
+// Ruta legacy redirigida (mantener por compatibilidad pero sin nombre de ruta)
+Route::middleware(['auth:participant', 'role:Usuario'])->get('/dashboard/participant', function () {
+    return redirect()->route('participant.dashboard');
 });
 
 Route::middleware(['auth:admin', 'role:Administrador'])->prefix('dashboard/admin')->group(function () {
@@ -49,14 +49,22 @@ Route::middleware(['auth:admin', 'role:Administrador'])->prefix('dashboard/admin
 
 // Rutas protegidas para administradores - Módulo de Proyectos
 Route::middleware(['auth:admin', 'role:Administrador'])->prefix('admin')->name('admin.')->group(function () {
+    // Perfil de administrador
+    Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('profile/password', [\App\Http\Controllers\Admin\ProfileController::class, 'changePassword'])->name('profile.password');
+
+    // Configuración de administrador
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+
     Route::resource('proyectos', ProyectoController::class);
     Route::post('proyectos/{proyecto}/toggle-status', [ProyectoController::class, 'toggleStatus'])->name('proyectos.toggle-status');
-    
+
     // Gestión de instituciones en proyectos
     Route::post('proyectos/{proyecto}/instituciones', [\App\Http\Controllers\Admin\InstitucionProyectoController::class, 'store'])->name('proyectos.instituciones.store');
     Route::post('instituciones/quick-create', [\App\Http\Controllers\Admin\InstitucionProyectoController::class, 'quickCreate'])->name('instituciones.quick-create');
     Route::delete('proyectos/{proyecto}/instituciones/{institucionProyecto}', [\App\Http\Controllers\Admin\InstitucionProyectoController::class, 'destroy'])->name('proyectos.instituciones.destroy');
-    
+
     // Gestión de participantes de una institución en un proyecto
     Route::get('proyectos/{proyecto}/instituciones/{institucionProyecto}/participantes', [\App\Http\Controllers\Admin\InstitucionParticipanteController::class, 'index'])->name('proyectos.instituciones.participantes');
     Route::post('proyectos/{proyecto}/instituciones/{institucionProyecto}/participantes', [\App\Http\Controllers\Admin\InstitucionParticipanteController::class, 'store'])->name('proyectos.instituciones.participantes.store');
@@ -101,5 +109,17 @@ Route::middleware(['auth:admin', 'role:Administrador'])->prefix('admin')->name('
 
 // Rutas protegidas para participantes
 Route::middleware(['auth:participant', 'role:Usuario'])->prefix('participant')->name('participant.')->group(function () {
+    Route::get('dashboard', [ParticipantDashboardController::class, 'index'])->name('dashboard');
+    Route::get('ranking', [ParticipantDashboardController::class, 'ranking'])->name('ranking');
+    Route::get('premios', [ParticipantDashboardController::class, 'premios'])->name('premios');
+    Route::get('canjes', [ParticipantDashboardController::class, 'canjes'])->name('canjes');
     Route::get('anuncios', [\App\Http\Controllers\Participant\AnuncioController::class, 'index'])->name('anuncios.index');
+
+    // Perfil de participante
+    Route::get('profile', [\App\Http\Controllers\Participant\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('profile', [\App\Http\Controllers\Participant\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('profile/password', [\App\Http\Controllers\Participant\ProfileController::class, 'changePassword'])->name('profile.password');
+
+    // Configuración de participante
+    Route::get('settings', [\App\Http\Controllers\Participant\SettingsController::class, 'index'])->name('settings.index');
 });
