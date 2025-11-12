@@ -14,12 +14,31 @@ class UserSeeder extends Seeder
         $personas = \App\Models\Persona::all();
         $personasUsadas = [];
 
+        // Función para normalizar emails (eliminar acentos y caracteres especiales)
+        $normalizeEmail = function ($text) {
+            $text = mb_strtolower($text, 'UTF-8');
+            // Reemplazar caracteres especiales
+            $replacements = [
+                'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                'ñ' => 'n', 'ü' => 'u',
+                'Á' => 'a', 'É' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ú' => 'u',
+                'Ñ' => 'n', 'Ü' => 'u',
+            ];
+            $text = strtr($text, $replacements);
+            // Eliminar cualquier otro carácter especial y espacios múltiples
+            $text = preg_replace('/[^a-z0-9\s]/', '', $text);
+            $text = preg_replace('/\s+/', '.', trim($text));
+
+            return $text;
+        };
+
         // Crear 3 administradores
         for ($i = 0; $i < 3; $i++) {
             $persona = $personas->whereNotIn('id', $personasUsadas)->random();
             $personasUsadas[] = $persona->id;
             $nombreCompleto = $persona->nombres.' '.$persona->apellidos;
-            $email = strtolower(str_replace(' ', '.', $nombreCompleto)).'@sediecotech.com';
+            $emailBase = $normalizeEmail($nombreCompleto);
+            $email = $emailBase.'@sediecotech.com';
 
             \App\Models\User::firstOrCreate(
                 ['email' => $email],
@@ -39,7 +58,8 @@ class UserSeeder extends Seeder
             $persona = $personas->whereNotIn('id', $personasUsadas)->random();
             $personasUsadas[] = $persona->id;
             $nombreCompleto = $persona->nombres.' '.$persona->apellidos;
-            $email = strtolower(str_replace(' ', '.', $nombreCompleto)).'@participante.com';
+            $emailBase = $normalizeEmail($nombreCompleto);
+            $email = $emailBase.'@participante.com';
 
             \App\Models\User::firstOrCreate(
                 ['email' => $email],

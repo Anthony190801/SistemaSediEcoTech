@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AdminRegisterController;
 use App\Http\Controllers\Auth\ParticipantLoginController;
@@ -34,7 +35,5 @@ Route::middleware(['auth:participant', 'role:Usuario'])->prefix('dashboard/parti
 });
 
 Route::middleware(['auth:admin', 'role:Administrador'])->prefix('dashboard/admin')->group(function () {
-    Route::get('/', function () {
-        return view('dashboard.admin');
-    })->name('dashboard.admin');
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
