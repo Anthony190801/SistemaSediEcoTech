@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProyectoController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AdminRegisterController;
 use App\Http\Controllers\Auth\ParticipantLoginController;
@@ -35,4 +36,10 @@ Route::middleware(['auth:participant', 'role:Usuario'])->prefix('dashboard/parti
 
 Route::middleware(['auth:admin', 'role:Administrador'])->prefix('dashboard/admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+});
+
+// Rutas protegidas para administradores - Módulo de Proyectos
+Route::middleware(['auth:admin', 'role:Administrador'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('proyectos', ProyectoController::class);
+    Route::post('proyectos/{proyecto}/toggle-status', [ProyectoController::class, 'toggleStatus'])->name('proyectos.toggle-status');
 });
