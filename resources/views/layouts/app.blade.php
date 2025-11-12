@@ -17,10 +17,14 @@
     @stack('styles')
 </head>
 <body class="bg-[#FFFFFD] font-[Alice] flex flex-col min-h-screen">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#34A853] focus:text-white focus:rounded-lg focus:shadow-lg">
+        Saltar al contenido principal
+    </a>
     @include('layouts.partials.header')
 
     <!-- Main Content -->
-    <main class="flex-grow">
+    <main id="main-content" class="flex-grow" role="main">
         @yield('content')
     </main>
 
