@@ -64,8 +64,8 @@
         </a>
 
         <a 
-            href="#" 
-            class="flex items-center px-4 py-3 rounded-lg text-green-100 hover:bg-green-600 hover:text-white transition-colors"
+            href="{{ route('admin.premios.index') }}" 
+            class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.premios.*') ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-600 hover:text-white' }}"
         >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
@@ -84,8 +84,8 @@
         </a>
 
         <a 
-            href="#" 
-            class="flex items-center px-4 py-3 rounded-lg text-green-100 hover:bg-green-600 hover:text-white transition-colors"
+            href="{{ route('admin.canjes.index') }}" 
+            class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.canjes.*') ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-600 hover:text-white' }}"
         >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>

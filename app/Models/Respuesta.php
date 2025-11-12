@@ -18,6 +18,13 @@ class Respuesta extends Model
         'hora',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'fecha_programada' => 'date',
+        ];
+    }
+
     public function canjes(): HasMany
     {
         return $this->hasMany(Canje::class);

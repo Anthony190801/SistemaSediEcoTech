@@ -18,6 +18,7 @@ class Premio extends Model
         'institucion_proyecto_id',
         'tipo',
         'puntaje_requerido',
+        'posicion_requerida',
         'estado',
     ];
 

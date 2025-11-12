@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\CanjeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ParticipanteController;
+use App\Http\Controllers\Admin\PremioController;
 use App\Http\Controllers\Admin\ProyectoController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AdminRegisterController;
@@ -46,4 +48,10 @@ Route::middleware(['auth:admin', 'role:Administrador'])->prefix('admin')->name('
     
     // Módulo de Participantes
     Route::resource('participantes', ParticipanteController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+    
+    // Módulo de Premios
+    Route::resource('premios', PremioController::class);
+    
+    // Módulo de Canjes
+    Route::resource('canjes', CanjeController::class)->only(['index', 'show', 'update', 'destroy']);
 });

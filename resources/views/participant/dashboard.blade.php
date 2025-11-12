@@ -198,7 +198,9 @@
                                         @endif
                                         <div class="flex-1">
                                             <p class="font-semibold text-gray-800">{{ $premio->articulo->nombre }}</p>
-                                            <p class="text-sm text-gray-600">Canje por Ranking</p>
+                                            <p class="text-sm text-gray-600">
+                                                Requiere: <span class="font-semibold">Posición #{{ $premio->posicion_requerida ?? 'N/A' }}</span>
+                                            </p>
                                         </div>
                                         <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
                                             Disponible

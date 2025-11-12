@@ -22,13 +22,24 @@ class PremioSeeder extends Seeder
 
             foreach ($institucionesAsignadas as $institucionProyecto) {
                 $tipo = fake()->randomElement($tipos);
-                $puntajeRequerido = fake()->numberBetween(100, 1000);
+
+                // Asignar valores según el tipo de premio
+                $puntajeRequerido = null;
+                $posicionRequerida = null;
+
+                if ($tipo === 'Canje por puntaje') {
+                    $puntajeRequerido = fake()->numberBetween(100, 1000);
+                } else {
+                    // Canje por Ranking
+                    $posicionRequerida = fake()->numberBetween(1, 10);
+                }
 
                 \App\Models\Premio::create([
                     'articulo_id' => $articulo->id,
                     'institucion_proyecto_id' => $institucionProyecto->id,
                     'tipo' => $tipo,
                     'puntaje_requerido' => $puntajeRequerido,
+                    'posicion_requerida' => $posicionRequerida,
                     'estado' => 'Disponible',
                 ]);
             }
