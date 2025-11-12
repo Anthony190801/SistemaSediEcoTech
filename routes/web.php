@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ParticipanteController;
 use App\Http\Controllers\Admin\ProyectoController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AdminRegisterController;
@@ -42,4 +43,7 @@ Route::middleware(['auth:admin', 'role:Administrador'])->prefix('dashboard/admin
 Route::middleware(['auth:admin', 'role:Administrador'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('proyectos', ProyectoController::class);
     Route::post('proyectos/{proyecto}/toggle-status', [ProyectoController::class, 'toggleStatus'])->name('proyectos.toggle-status');
+    
+    // Módulo de Participantes
+    Route::resource('participantes', ParticipanteController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 });
