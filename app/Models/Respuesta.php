@@ -10,6 +10,8 @@ class Respuesta extends Model
 {
     use HasFactory;
 
+    protected $table = 'respuestas';
+
     protected $fillable = [
         'lugar',
         'fecha_programada',

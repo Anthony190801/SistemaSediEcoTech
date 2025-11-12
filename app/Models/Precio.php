@@ -10,6 +10,8 @@ class Precio extends Model
 {
     use HasFactory;
 
+    protected $table = 'precios';
+
     protected $fillable = [
         'cantidad_soles',
     ];

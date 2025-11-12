@@ -10,6 +10,8 @@ class Material extends Model
 {
     use HasFactory;
 
+    protected $table = 'materiales';
+
     protected $fillable = [
         'nombre',
         'url_foto',

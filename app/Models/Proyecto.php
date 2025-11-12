@@ -11,6 +11,8 @@ class Proyecto extends Model
 {
     use HasFactory;
 
+    protected $table = 'proyectos';
+
     protected $fillable = [
         'nombre',
         'url_logo',

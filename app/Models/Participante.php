@@ -11,6 +11,8 @@ class Participante extends Model
 {
     use HasFactory;
 
+    protected $table = 'participantes';
+
     protected $fillable = [
         'institucion_proyecto_id',
         'persona_id',

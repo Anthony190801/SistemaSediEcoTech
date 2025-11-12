@@ -10,6 +10,8 @@ class Institucion extends Model
 {
     use HasFactory;
 
+    protected $table = 'instituciones';
+
     protected $fillable = [
         'nombre',
         'direccion',

@@ -10,6 +10,8 @@ class Recoleccion extends Model
 {
     use HasFactory;
 
+    protected $table = 'recolecciones';
+
     protected $fillable = [
         'participante_id',
         'material_precio_id',

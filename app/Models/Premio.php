@@ -11,6 +11,8 @@ class Premio extends Model
 {
     use HasFactory;
 
+    protected $table = 'premios';
+
     protected $fillable = [
         'articulo_id',
         'institucion_proyecto_id',

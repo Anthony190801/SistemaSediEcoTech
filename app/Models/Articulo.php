@@ -10,6 +10,8 @@ class Articulo extends Model
 {
     use HasFactory;
 
+    protected $table = 'articulos';
+
     protected $fillable = [
         'nombre',
         'url_foto',

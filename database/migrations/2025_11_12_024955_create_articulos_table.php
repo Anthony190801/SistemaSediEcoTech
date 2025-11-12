@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('articulos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 150);
-            $table->string('url_foto', 255);
+            $table->string('url_foto', 255)->nullable();
             $table->double('precio');
             $table->timestamps();
         });

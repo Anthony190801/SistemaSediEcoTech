@@ -10,6 +10,8 @@ class Canje extends Model
 {
     use HasFactory;
 
+    protected $table = 'canjes';
+
     protected $fillable = [
         'premio_id',
         'participante_id',
