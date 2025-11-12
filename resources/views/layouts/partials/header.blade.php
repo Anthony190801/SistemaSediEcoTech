@@ -73,11 +73,11 @@
                                 Página principal
                             </a>
                             @if(auth()->user()->rol === 'Administrador')
-                                <a href="{{ route('dashboard.admin') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#7BC549] hover:text-white transition-colors">
+                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#7BC549] hover:text-white transition-colors">
                                     Dashboard
                                 </a>
                             @else
-                                <a href="{{ route('dashboard.participant') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#7BC549] hover:text-white transition-colors">
+                                <a href="{{ route('participant.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#7BC549] hover:text-white transition-colors">
                                     Dashboard
                                 </a>
                             @endif

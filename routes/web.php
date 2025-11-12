@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AdminRegisterController;
 use App\Http\Controllers\Auth\ParticipantLoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Participant\DashboardController as ParticipantDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -27,11 +28,9 @@ Route::prefix('admin')->middleware('guest')->group(function () {
 
 Route::post('/admin/logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
-// Rutas protegidas (ejemplo - se crearán los dashboards después)
+// Rutas protegidas para participantes
 Route::middleware(['auth:participant', 'role:Usuario'])->prefix('dashboard/participant')->group(function () {
-    Route::get('/', function () {
-        return view('dashboard.participant');
-    })->name('dashboard.participant');
+    Route::get('/', [ParticipantDashboardController::class, 'index'])->name('participant.dashboard');
 });
 
 Route::middleware(['auth:admin', 'role:Administrador'])->prefix('dashboard/admin')->group(function () {
