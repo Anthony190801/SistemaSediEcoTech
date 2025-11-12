@@ -80,6 +80,9 @@
                                 <a href="{{ route('participant.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#7BC549] hover:text-white transition-colors">
                                     Dashboard
                                 </a>
+                                <a href="{{ route('participant.anuncios.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#7BC549] hover:text-white transition-colors">
+                                    Anuncios
+                                </a>
                             @endif
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#7BC549] hover:text-white transition-colors">
                                 Mi perfil

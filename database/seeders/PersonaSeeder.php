@@ -11,6 +11,14 @@ class PersonaSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Persona::factory(30)->create();
+        // Crear al menos 50 personas para asegurar que haya suficientes
+        // para usuarios (23) y participantes (40-60), con un margen de seguridad
+        $cantidadPersonasActual = \App\Models\Persona::count();
+        $cantidadPersonasNecesarias = 50;
+
+        if ($cantidadPersonasActual < $cantidadPersonasNecesarias) {
+            $personasFaltantes = $cantidadPersonasNecesarias - $cantidadPersonasActual;
+            \App\Models\Persona::factory($personasFaltantes)->create();
+        }
     }
 }

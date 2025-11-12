@@ -155,4 +155,39 @@ class ParticipanteController extends Controller
             return back()->with('error', 'Error al eliminar el participante: '.$e->getMessage());
         }
     }
+
+    /**
+     * Buscar participante por DNI, proyecto e institución.
+     */
+    public function buscar(Request $request)
+    {
+        $dni = $request->input('dni');
+        $proyectoId = $request->input('proyecto_id');
+        $institucionId = $request->input('institucion_id');
+
+        $participante = Participante::whereHas('persona', function ($q) use ($dni) {
+            $q->where('dni', $dni);
+        })
+            ->whereHas('institucionProyecto', function ($q) use ($proyectoId, $institucionId) {
+                $q->where('proyecto_id', $proyectoId)
+                    ->where('institucion_id', $institucionId);
+            })
+            ->with('persona')
+            ->first();
+
+        if ($participante) {
+            return response()->json([
+                'success' => true,
+                'participante' => [
+                    'id' => $participante->id,
+                    'nombre' => $participante->persona->nombres.' '.$participante->persona->apellidos,
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Participante no encontrado',
+        ]);
+    }
 }

@@ -14,20 +14,25 @@ class MaterialPrecioSeeder extends Seeder
         $materiales = \App\Models\Material::all();
         $precios = \App\Models\Precio::all();
 
-        // Asociar cada material con varios precios
+        // Un material puede tener múltiples MaterialPrecio (históricos)
+        // Pero no puede repetir la combinación material_id + precio_id (restricción unique)
         foreach ($materiales as $material) {
-            $numPrecios = fake()->numberBetween(2, 4);
-            $preciosAsignados = $precios->random($numPrecios);
+            // Crear 1-3 precios históricos por material
+            $numPrecios = fake()->numberBetween(1, 3);
+            $preciosAsignados = $precios->random(min($numPrecios, $precios->count()));
 
             foreach ($preciosAsignados as $precio) {
-                // Verificar que no exista ya la relación
+                // Verificar que no exista ya la combinación material_id + precio_id (restricción unique)
                 $existe = \App\Models\MaterialPrecio::where('material_id', $material->id)
                     ->where('precio_id', $precio->id)
                     ->exists();
 
                 if (! $existe) {
-                    $fechaInicio = fake()->dateTimeBetween('-6 months', 'now');
-                    $fechaFin = fake()->optional(0.2)->dateTimeBetween($fechaInicio, '+3 months');
+                    // Crear precios con diferentes fechas (algunos históricos, algunos activos)
+                    $fechaInicio = fake()->dateTimeBetween('-12 months', 'now');
+                    // 70% de probabilidad de que tenga fecha_fin (precio histórico)
+                    // 30% de probabilidad de que no tenga fecha_fin (precio activo)
+                    $fechaFin = fake()->optional(0.7)->dateTimeBetween($fechaInicio, '+6 months');
                     $puntaje = (int) ($precio->cantidad_soles * 10);
 
                     \App\Models\MaterialPrecio::create([

@@ -54,13 +54,13 @@
         </a>
 
         <a 
-            href="#" 
-            class="flex items-center px-4 py-3 rounded-lg text-green-100 hover:bg-green-600 hover:text-white transition-colors"
+            href="{{ route('admin.materiales.index') }}" 
+            class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.materiales.*') ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-600 hover:text-white' }}"
         >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
             </svg>
-            <span class="font-medium">Materiales de recolección</span>
+            <span class="font-medium">Materiales</span>
         </a>
 
         <a 
@@ -74,13 +74,13 @@
         </a>
 
         <a 
-            href="#" 
-            class="flex items-center px-4 py-3 rounded-lg text-green-100 hover:bg-green-600 hover:text-white transition-colors"
+            href="{{ route('admin.recolecciones.index') }}" 
+            class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.recolecciones.*') ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-600 hover:text-white' }}"
         >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
-            <span class="font-medium">Registro de recolección</span>
+            <span class="font-medium">Recolecciones</span>
         </a>
 
         <a 
@@ -94,8 +94,8 @@
         </a>
 
         <a 
-            href="#" 
-            class="flex items-center px-4 py-3 rounded-lg text-green-100 hover:bg-green-600 hover:text-white transition-colors"
+            href="{{ route('admin.anuncios.index') }}" 
+            class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.anuncios.*') ? 'bg-green-600 text-white' : 'text-green-100 hover:bg-green-600 hover:text-white' }}"
         >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>

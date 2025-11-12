@@ -22,12 +22,38 @@ class DashboardController extends Controller
         $totalProyectos = Proyecto::where('estado', 'Activo')->count();
         $totalInstituciones = Institucion::count();
         $totalParticipantes = Participante::count();
-        $totalKgReciclados = Recoleccion::where('estado', 'Validado')->sum('cantidad_kilogramos') ?? 0;
+        $totalKgReciclados = Recoleccion::where('recolecciones.estado', 'Validado')->sum('cantidad_kilogramos') ?? 0;
         $totalPremios = Premio::where('estado', 'Disponible')->count();
 
+        // Estadísticas de recolecciones
+        $totalMateriales = \App\Models\Material::count();
+        $totalPuntosGenerados = Recoleccion::where('recolecciones.estado', 'Validado')
+            ->join('material_precio', 'recolecciones.material_precio_id', '=', 'material_precio.id')
+            ->selectRaw('SUM(recolecciones.cantidad_kilogramos * material_precio.puntaje) as total')
+            ->value('total') ?? 0;
+
+        // Material más reciclado
+        $materialMasReciclado = Recoleccion::where('recolecciones.estado', 'Validado')
+            ->join('material_precio', 'recolecciones.material_precio_id', '=', 'material_precio.id')
+            ->join('materiales', 'material_precio.material_id', '=', 'materiales.id')
+            ->select('materiales.nombre', DB::raw('SUM(recolecciones.cantidad_kilogramos) as total_kg'))
+            ->groupBy('materiales.id', 'materiales.nombre')
+            ->orderByDesc('total_kg')
+            ->first();
+
+        // Institución con mayor recolección
+        $institucionMayorRecoleccion = Recoleccion::where('recolecciones.estado', 'Validado')
+            ->join('participantes', 'recolecciones.participante_id', '=', 'participantes.id')
+            ->join('institucion_proyecto', 'participantes.institucion_proyecto_id', '=', 'institucion_proyecto.id')
+            ->join('instituciones', 'institucion_proyecto.institucion_id', '=', 'instituciones.id')
+            ->select('instituciones.nombre', DB::raw('SUM(recolecciones.cantidad_kilogramos) as total_kg'))
+            ->groupBy('instituciones.id', 'instituciones.nombre')
+            ->orderByDesc('total_kg')
+            ->first();
+
         // Gráfica de materiales más reciclados (top 6)
-        $graficaMateriales = Recoleccion::query()
-            ->where('estado', 'Validado')
+        $graficaMaterialesTop = Recoleccion::query()
+            ->where('recolecciones.estado', 'Validado')
             ->join('material_precio', 'recolecciones.material_precio_id', '=', 'material_precio.id')
             ->join('materiales', 'material_precio.material_id', '=', 'materiales.id')
             ->select('materiales.nombre', DB::raw('SUM(recolecciones.cantidad_kilogramos) as total_kg'))
@@ -44,10 +70,10 @@ class DashboardController extends Controller
 
         // Gráfica de participación mensual (año actual)
         $graficaMensual = Recoleccion::query()
-            ->where('estado', 'Validado')
-            ->whereYear('fecha', now()->year)
+            ->where('recolecciones.estado', 'Validado')
+            ->whereYear('recolecciones.fecha', now()->year)
             ->select(
-                DB::raw('MONTH(fecha) as mes'),
+                DB::raw('MONTH(recolecciones.fecha) as mes'),
                 DB::raw('COUNT(*) as total')
             )
             ->groupBy('mes')
@@ -78,14 +104,70 @@ class DashboardController extends Controller
             ];
         }
 
+        // Gráfica de instituciones (barras)
+        $graficaInstituciones = Recoleccion::where('recolecciones.estado', 'Validado')
+            ->join('participantes', 'recolecciones.participante_id', '=', 'participantes.id')
+            ->join('institucion_proyecto', 'participantes.institucion_proyecto_id', '=', 'institucion_proyecto.id')
+            ->join('instituciones', 'institucion_proyecto.institucion_id', '=', 'instituciones.id')
+            ->select('instituciones.nombre', DB::raw('SUM(recolecciones.cantidad_kilogramos) as total_kg'))
+            ->groupBy('instituciones.id', 'instituciones.nombre')
+            ->orderByDesc('total_kg')
+            ->limit(10)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'nombre' => $item->nombre,
+                    'total_kg' => round((float) $item->total_kg, 2),
+                ];
+            });
+
+        // Gráfica de materiales (torta)
+        $graficaMateriales = Recoleccion::where('recolecciones.estado', 'Validado')
+            ->join('material_precio', 'recolecciones.material_precio_id', '=', 'material_precio.id')
+            ->join('materiales', 'material_precio.material_id', '=', 'materiales.id')
+            ->select('materiales.nombre', DB::raw('SUM(recolecciones.cantidad_kilogramos) as total_kg'))
+            ->groupBy('materiales.id', 'materiales.nombre')
+            ->orderByDesc('total_kg')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'nombre' => $item->nombre,
+                    'total_kg' => round((float) $item->total_kg, 2),
+                ];
+            });
+
+        // Gráfica de evolución (últimos 30 días)
+        $graficaEvolucion = Recoleccion::where('recolecciones.estado', 'Validado')
+            ->whereDate('recolecciones.fecha', '>=', now()->subDays(30))
+            ->select(
+                DB::raw('DATE(recolecciones.fecha) as fecha'),
+                DB::raw('SUM(recolecciones.cantidad_kilogramos) as total_kg')
+            )
+            ->groupBy('fecha')
+            ->orderBy('fecha')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'fecha' => $item->fecha,
+                    'total_kg' => round((float) $item->total_kg, 2),
+                ];
+            });
+
         return view('admin.dashboard', [
             'totalProyectos' => $totalProyectos,
             'totalInstituciones' => $totalInstituciones,
             'totalParticipantes' => $totalParticipantes,
             'totalKgReciclados' => round($totalKgReciclados, 2),
             'totalPremios' => $totalPremios,
-            'graficaMateriales' => $graficaMateriales,
+            'totalMateriales' => $totalMateriales,
+            'totalPuntosGenerados' => round($totalPuntosGenerados, 2),
+            'materialMasReciclado' => $materialMasReciclado,
+            'institucionMayorRecoleccion' => $institucionMayorRecoleccion,
+            'graficaMaterialesTop' => $graficaMaterialesTop,
             'graficaMensual' => collect($mesesCompletos),
+            'graficaInstituciones' => $graficaInstituciones,
+            'graficaMateriales' => $graficaMateriales,
+            'graficaEvolucion' => $graficaEvolucion,
         ]);
     }
 }
