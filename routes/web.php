@@ -51,6 +51,19 @@ Route::middleware(['auth:admin', 'role:Administrador'])->prefix('dashboard/admin
 Route::middleware(['auth:admin', 'role:Administrador'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('proyectos', ProyectoController::class);
     Route::post('proyectos/{proyecto}/toggle-status', [ProyectoController::class, 'toggleStatus'])->name('proyectos.toggle-status');
+    
+    // Gestión de instituciones en proyectos
+    Route::post('proyectos/{proyecto}/instituciones', [\App\Http\Controllers\Admin\InstitucionProyectoController::class, 'store'])->name('proyectos.instituciones.store');
+    Route::post('instituciones/quick-create', [\App\Http\Controllers\Admin\InstitucionProyectoController::class, 'quickCreate'])->name('instituciones.quick-create');
+    Route::delete('proyectos/{proyecto}/instituciones/{institucionProyecto}', [\App\Http\Controllers\Admin\InstitucionProyectoController::class, 'destroy'])->name('proyectos.instituciones.destroy');
+    
+    // Gestión de participantes de una institución en un proyecto
+    Route::get('proyectos/{proyecto}/instituciones/{institucionProyecto}/participantes', [\App\Http\Controllers\Admin\InstitucionParticipanteController::class, 'index'])->name('proyectos.instituciones.participantes');
+    Route::post('proyectos/{proyecto}/instituciones/{institucionProyecto}/participantes', [\App\Http\Controllers\Admin\InstitucionParticipanteController::class, 'store'])->name('proyectos.instituciones.participantes.store');
+    Route::delete('proyectos/{proyecto}/instituciones/{institucionProyecto}/participantes/{participante}', [\App\Http\Controllers\Admin\InstitucionParticipanteController::class, 'destroy'])->name('proyectos.instituciones.participantes.destroy');
+
+    // Módulo de Usuarios
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->parameters(['users' => 'user']);
 
     // Módulo de Participantes
     Route::resource('participantes', ParticipanteController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);

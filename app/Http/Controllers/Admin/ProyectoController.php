@@ -116,14 +116,59 @@ class ProyectoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Proyecto $proyecto): View
+    public function show(Request $request, Proyecto $proyecto): View
     {
         $proyecto->load([
             'institucionProyectos.institucion',
+            'institucionProyectos.participantes',
         ]);
+
+        // Obtener todas las instituciones para el select
+        $todasInstituciones = Institucion::orderBy('nombre')->get();
+
+        // Obtener instituciones ya asociadas al proyecto
+        $institucionesAsociadas = $proyecto->institucionProyectos->pluck('institucion_id')->toArray();
+
+        // Filtrar instituciones disponibles (no asociadas)
+        $institucionesDisponibles = $todasInstituciones->reject(function ($institucion) use ($institucionesAsociadas) {
+            return in_array($institucion->id, $institucionesAsociadas);
+        });
+
+        // Filtros para el listado de instituciones
+        $queryInstituciones = $proyecto->institucionProyectos()->with(['institucion', 'participantes']);
+
+        if ($request->filled('search_institucion')) {
+            $queryInstituciones->whereHas('institucion', function ($q) use ($request) {
+                $q->where('nombre', 'like', '%'.$request->search_institucion.'%');
+            });
+        }
+
+        if ($request->filled('estado_vinculo')) {
+            $queryInstituciones->where('estado', $request->estado_vinculo);
+        }
+
+        $institucionesProyecto = $queryInstituciones->orderBy('fecha_inicio', 'desc')->get();
+
+        // Métricas del proyecto
+        $totalInstituciones = $proyecto->institucionProyectos->count();
+        $totalParticipantes = $proyecto->institucionProyectos->sum(function ($ip) {
+            return $ip->participantes->count();
+        });
+
+        // Total de recolecciones del proyecto (a través de participantes)
+        $totalRecolecciones = \App\Models\Recoleccion::whereHas('participante.institucionProyecto', function ($q) use ($proyecto) {
+            $q->where('proyecto_id', $proyecto->id);
+        })->count();
 
         return view('admin.proyectos.show', [
             'proyecto' => $proyecto,
+            'institucionesDisponibles' => $institucionesDisponibles,
+            'institucionesProyecto' => $institucionesProyecto,
+            'searchInstitucion' => $request->search_institucion,
+            'estadoVinculoFilter' => $request->estado_vinculo,
+            'totalInstituciones' => $totalInstituciones,
+            'totalParticipantes' => $totalParticipantes,
+            'totalRecolecciones' => $totalRecolecciones,
         ]);
     }
 

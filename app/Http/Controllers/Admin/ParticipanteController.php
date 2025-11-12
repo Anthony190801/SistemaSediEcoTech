@@ -76,7 +76,7 @@ class ParticipanteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Participante $participante): View
+    public function show(Request $request, Participante $participante): View
     {
         $participante->load([
             'persona',
@@ -95,10 +95,14 @@ class ParticipanteController extends Controller
 
         $totalParticipantes = Participante::where('institucion_proyecto_id', $participante->institucion_proyecto_id)->count();
 
+        // Obtener URL de retorno si existe
+        $returnTo = $request->get('return_to', route('admin.participantes.index'));
+
         return view('admin.participantes.show', [
             'participante' => $participante,
             'ranking' => $ranking,
             'totalParticipantes' => $totalParticipantes,
+            'returnTo' => $returnTo,
         ]);
     }
 
